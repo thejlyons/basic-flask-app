@@ -1,0 +1,17 @@
+{% extends "emails/base_email.html" %}
+{% block content %}
+    <p>{{ user.get_name() }}</p>
+    <p>
+        Your new account needs verified. Please
+        <a href="{{ url_for('auth.login', token=token, _external=True) }}">
+            click here
+        </a> to confirm your email.
+    </p>
+    <br>
+    <br>
+    <p>Alternatively, you can paste the following link in your browser's address bar:</p>
+    <a href="{{ url_for('auth.login', token=token, _external=True) }}">
+        {{ url_for('auth.login', token=token, _external=True) }}
+    </a>
+    <p>This link will expire in 3 days and you will need to request a new one.</p>
+{% endblock %}
