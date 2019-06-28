@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+        <style>
+        </style>
+    </head>
+    <body>
+
+        <div class="brand">
+            <div>
+                <h1>DistroTream</h1>
+            </div>
+        </div>
+
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+
+        <div class="footer">
+            <p>Add no-reply@distroteam.com to your address book to ensure delivery of these emails.</p>
+
+            <strong>IMPORTANT INFORMATION</strong>
+
+            <p>This email was sent to {{ user.email }} for information regarding their account at DistroTeam.</p>
+
+            <p>You are receiving this email because you have an account at DistroTeam or you are being invited to the platform.</p>
+
+            <p>If you have any questions about your account, please contact us at contact@distroteam.com or reach out to your account manager(s).</p>
+
+            <p>Please do not reply to this email as we are not able to respond to messages sent to this address.</p>
+
+            <a href="{{ url_for('auth.unsubscribe', _external=True) }}">Unsubscribe</a>
+        </div>
+
+    </body>
+</html>
