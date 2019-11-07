@@ -2,6 +2,10 @@
 
 {% block content %}
     <h1>Hello World!</h1>
-    <a href="{{ url_for('auth.login') }}">Login</a>
-    <a href="{{ url_for('auth.register') }}">Register</a>
+    {% if current_user.is_anonymous %}
+        <a href="{{ url_for('auth.login') }}">Login</a>
+        <a href="{{ url_for('auth.register') }}">Register</a>
+    {% else %}
+        <a href="{{ url_for('auth.logout') }}">Logout</a>
+    {% endif %}
 {% endblock %}

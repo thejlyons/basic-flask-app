@@ -7,5 +7,4 @@ from flask import render_template
 @app.route('/index')
 def index():
     """Home."""
-    tools.test_tools("Tools works!")
     return render_template('index/index.html')

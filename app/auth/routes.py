@@ -8,8 +8,15 @@ from app.models import db, User, Unsubscriber
 import app.tools as tools
 
 
-@bp.route('/unsubscribe', methods=['GET', 'POST'])
+@bp.route('/unsubscribe', methods=['GET'])
 def unsubscribe():
+    """Unsubscribe endpoint."""
+    form = UnsubscribeForm()
+    return render_template('auth/unsubscribe.html', title="Unsubscribe", form=form)
+
+
+@bp.route('/unsubscribe/submit', methods=['POST'])
+def unsubscribe_submit():
     """Unsubscribe endpoint."""
     form = UnsubscribeForm()
     if form.validate_on_submit():
@@ -17,10 +24,10 @@ def unsubscribe():
         db.session.add(unsub)
         db.session.commit()
         flash("Your email and preferences have been recorded..")
-    return render_template('auth/unsubscribe.html', title="Unsubscribe", form=form)
+    return redirect(url_for('auth.unsubscribe'))
 
 
-@bp.route('/login', methods=['GET', 'POST'])
+@bp.route('/login', methods=['GET'])
 def login():
     """Login endpoint."""
     token = request.args.get('token')
@@ -30,35 +37,50 @@ def login():
             user.email_confirmed = True
             db.session.commit()
             flash("Thank you. Your email has been confirmed!")
-            redirect(tools.get_landing_page(user))
+            redirect(user.get_landing_page())
         else:
             flash("You're confirmation link is invalid.")
     if current_user.is_authenticated:
-        return redirect(tools.get_landing_page(current_user))
+        return redirect(current_user.get_landing_page())
+    form = LoginForm()
+    return render_template('auth/login.html', title='Sign In', form=form)
+
+
+@bp.route('/login/submit', methods=['POST'])
+def login_submit():
+    """Login endpoint."""
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.get(email=form.email.data)
         if user is None or not user.check_password(form.password.data):
             flash('Invalid email or password')
         else:
             login_user(user, remember=form.remember_me.data)
             flash("Logged in!")
-            return redirect(tools.get_landing_page(user))
-    return render_template('auth/login.html', title='Sign In', form=form)
+            return redirect(user.get_landing_page())
+    return redirect(url_for('auth.login'))
 
 
-@bp.route('/register', methods=['GET', 'POST'])
+@bp.route('/register', methods=['GET'])
 def register():
     """Login endpoint."""
     if current_user.is_authenticated:
-        return redirect(tools.get_landing_page(current_user))
+        return redirect(current_user.get_landing_page())
+    form = RegisterForm()
+    return render_template('auth/register.html', title='Sign In', form=form)
+
+
+@bp.route('/register/submit', methods=['POST'])
+def register_submit():
+    """Login endpoint."""
     form = RegisterForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        email = form.email.data
+        user = User.get(email=form.email.data)
         if user:
             flash('That email is already taken')
         else:
-            user = User(email=form.email.data)
+            user = User(email=email)
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
@@ -66,7 +88,7 @@ def register():
             send_confirm_email(user)
             login_user(user)
             flash("Registered!")
-            return redirect(tools.get_landing_page(user))
+            return redirect(user.get_landing_page())
     return render_template('auth/register.html', title='Sign In', form=form)
 
 
@@ -78,27 +100,47 @@ def logout():
     return redirect(url_for('index'))
 
 
-@bp.route('/reset_password_request', methods=['GET', 'POST'])
+@bp.route('/reset_password_request', methods=['GET'])
 def reset_password_request():
     """Request Password Reset endpoint."""
     if current_user.is_authenticated:
         flash("Already logged in!")
-        return redirect(tools.get_landing_page(current_user))
+        return redirect(current_user.get_landing_page())
+    form = ResetPasswordRequestForm()
+    return render_template('auth/reset_password_request.html', title='Reset Password', form=form)
+
+
+@bp.route('/reset_password_request/submit', methods=['POST'])
+def reset_password_request_submit():
+    """Request Password Reset Submit endpoint."""
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.get(email=form.email.data)
         if user:
             send_password_reset(user)
             flash('Check your email for the instructions to reset your password')
             return redirect(url_for('auth.login'))
         else:
             flash('There is no user associated with that email. Please try again.')
-    return render_template('auth/reset_password_request.html', title='Reset Password', form=form)
+    return redirect(url_for('auth.reset_password_request'))
 
 
-@bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+@bp.route('/reset_password/<token>', methods=['GET'])
 def reset_password(token):
     """Reset Password."""
+    if current_user.is_authenticated:
+        return redirect(url_for('auth.login'))
+    user = User.verify_reset_password_token(token)
+    if not user:
+        flash('Your reset link has expired. Please request a new one.')
+        return redirect(url_for('auth.reset_password_request'))
+    form = ResetPasswordForm()
+    return render_template('auth/reset_password.html', title='Reset Password', form=form, token=token)
+
+
+@bp.route('/reset_password/submit/<token>', methods=['POST'])
+def reset_password_submit(token):
+    """Reset Password Submit."""
     if current_user.is_authenticated:
         return redirect(url_for('auth.login'))
     user = User.verify_reset_password_token(token)
@@ -111,5 +153,5 @@ def reset_password(token):
         db.session.commit()
         flash('Your password has been reset.')
         login_user(user, remember=False)
-        return redirect(tools.get_landing_page(user))
-    return render_template('auth/reset_password.html', title='Reset Password', form=form)
+        return redirect(user.get_landing_page())
+    return redirect(url_for('auth.reset_password_request', token=token))

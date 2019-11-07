@@ -8,15 +8,11 @@ import boto3
 import sendgrid
 from sendgrid.helpers.mail import *
 from flask_sslify import SSLify
-from dotenv import load_dotenv
-
-env_path = 'C:\\Users\\lyons\\Github\\distroteam\\.flaskenv'
-if os.path.exists(env_path):
-    load_dotenv(dotenv_path=env_path)
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object(os.environ['APP_SETTINGS'])
 
+# TODO: Add Celery
 
 sslify = SSLify(app)
 db = SQLAlchemy(app)

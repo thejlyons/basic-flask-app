@@ -13,9 +13,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     ADMINS = [email.strip() for email in os.environ['ADMIN_EMAILS'].split(',')]
-    SECRET_KEY = 'temp-secret-key-here'
-    if os.environ.get('SECRET_KEY'):
-        SECRET_KEY = base64.b64decode(os.environ.get('SECRET_KEY'))
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'temp-secret-key-here')
     S3_LOCATION = 'https://{}.s3.amazonaws.com/'.format(os.environ.get("S3_BUCKET_NAME"))
 
 
