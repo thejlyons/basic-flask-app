@@ -7,8 +7,8 @@ EMAIL_ADDR - Email address from which the app will send emails and notifications
 EMAIL_NAME - The name under which these emails will show in the recipients inbox (i.e. 'Basic App')
 FLASK_APP=application.py
 FLASK_ENV=development
-SECRET_KEY=V*C5m_!S|5e^S6oGYCRRMm3n.z6eUK_nB]VjBD]fix:,|W0}a[pJE<4B}k,}{wk[
-SENDGRID_API_KEY=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
+SECRET_KEY - Use script below to generate a secret key.
+SENDGRID_API_KEY - Sendgrid API key.
 
 #### Generate Secret Key
 
