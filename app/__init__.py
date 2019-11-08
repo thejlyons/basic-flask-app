@@ -13,6 +13,8 @@ app = Flask(__name__, static_url_path='/static')
 app.config.from_object(os.environ['APP_SETTINGS'])
 
 # TODO: Add Celery
+# TODO: Separate .flaskenv (pushable) and .env (private) env vars.
+# TODO: Add custom error messaging for push notifications to error logging app.
 
 sslify = SSLify(app)
 db = SQLAlchemy(app)
@@ -37,7 +39,7 @@ class EmailHandler(logging.Handler):
         body = '<pre>{}</pre><br><br><a href="https://meetgessi.com/unsubscribe">Unsubscribe</a>'.format(log_entry)
         sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
         email_obj = Mail(Email(os.environ.get("EMAIL_ADDR"), os.environ.get("EMAIL_NAME", "")),
-                         '{} [Error]'.format(os.environ.get("ENV_NAME", "Gessi ENV Not Set")), Email('j@jlyons.me'),
+                         '{} [Error]'.format(os.environ.get("ENV_NAME", "ENV Not Set")), Email('j@jlyons.me'),
                          Content('text/html', body))
         response = sg.client.mail.send.post(request_body=email_obj.get())
 
