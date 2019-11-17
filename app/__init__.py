@@ -35,10 +35,6 @@ class ContextTask(celery.Task):
 
 celery.Task = ContextTask
 
-# TODO: Separate .flaskenv (pushable) and .env (private) env vars.
-# TODO: Add custom error messaging for push notifications to error logging app.
-# TODO: Upload profile image. On new image/image delete, delete old file from S3
-
 sslify = SSLify(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -52,8 +48,9 @@ from app import models, routes
 from app.auth import bp as auth_bp
 app.register_blueprint(auth_bp)
 
-from app import worker
-app.cli.add_command(worker.user_cli)
+from app import cli
+app.cli.add_command(cli.user_cli)
+app.cli.add_command(cli.manage_cli)
 
 
 class EmailHandler(logging.Handler):

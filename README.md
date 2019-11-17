@@ -1,13 +1,21 @@
 #### Environment Variables
 
 ADMIN_EMAILS - Comma separated list of admin/dev emails to send error emails to.
+
 APP_SETTINGS - Class in config.py to initialize with. config.DevelopmentConfig for development server and config.ProductionConfig for production.
+
 DATABASE_URL - Postgres DB url
+
 EMAIL_ADDR - Email address from which the app will send emails and notifications (i.e. no-reply@basicapp.com).
+
 EMAIL_NAME - The name under which these emails will show in the recipients inbox (i.e. 'Basic App')
+
 FLASK_APP=application.py
+
 FLASK_ENV=development
+
 SECRET_KEY - Use script below to generate a secret key.
+
 SENDGRID_API_KEY - Sendgrid API key.
 
 #### Generate Secret Key
@@ -37,3 +45,10 @@ An example CLI script is included in this basic app. It sets a user as admin by 
 ```
 flask user make-admin admin@basic-app.com
 ```
+
+#### TODOs
+ - Separate .flaskenv (pushable) and .env (private) env vars.
+ - Add custom error messaging for push notifications to error logging app.
+ - Upload profile image. On new image/image delete, delete old file from S3
+ - Configure for deployment to AWS Elasticbeanstalk (.ebextensions, etc.)
+ - Configure for deployment to Heroku (Procfile, etc.)

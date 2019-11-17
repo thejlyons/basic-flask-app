@@ -1,0 +1,12 @@
+/* import only the necessary Bootstrap files */
+@import "functions";
+@import "variables";
+/* -------begin customization-------- */
+
+$theme-colors: (
+  primary: #c02653
+);
+
+/* -------end customization-------- */
+/* finally, import Bootstrap to set the changes! */
+@import "bootstrap";
