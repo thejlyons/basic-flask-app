@@ -1,6 +1,5 @@
 .idea/
 .venv/
-venv/
 migrations
 .flaskenv
 *.db

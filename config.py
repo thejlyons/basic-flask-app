@@ -1,5 +1,5 @@
 import os
-import base64
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -15,6 +15,9 @@ class Config(object):
     ADMINS = [email.strip() for email in os.environ['ADMIN_EMAILS'].split(',')]
     SECRET_KEY = os.environ.get('SECRET_KEY', 'temp-secret-key-here')
     S3_LOCATION = 'https://{}.s3.amazonaws.com/'.format(os.environ.get("S3_BUCKET_NAME"))
+
+    CELERY_BROKER_URL = 'redis://localhost:6379'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 
 
 class ProductionConfig(Config):

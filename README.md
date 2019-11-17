@@ -21,3 +21,19 @@ import string
 chars = string.ascii_letters + string.digits + string.punctuation
 print(''.join(random.choice(chars) for i in range(64)))
 ```
+
+#### Set up DB
+
+Simply run the following lines:
+```
+flask db init
+flask db migrate
+flask db upgrade
+```
+
+#### Execute CLI script
+
+An example CLI script is included in this basic app. It sets a user as admin by the given email.
+```
+flask user make-admin admin@basic-app.com
+```
