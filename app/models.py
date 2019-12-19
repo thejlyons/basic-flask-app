@@ -29,6 +29,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
 
     admin = db.Column(db.Boolean(), nullable=False, default=False, server_default='f')
+    created = db.Column(db.DateTime, server_default=db.func.now())
 
     @staticmethod
     def get(id=None, email=None):
@@ -94,6 +95,10 @@ class User(UserMixin, db.Model):
     def validate_email(self, key, value):
         """Validate Email."""
         return value.lower()
+
+    def __str__(self):
+        """Return str representation of model."""
+        return f"{self.email} ({self.id})"
 
     def as_dict(self):
         """Return dict representation of model."""

@@ -48,6 +48,9 @@ from app import models, routes
 from app.auth import bp as auth_bp
 app.register_blueprint(auth_bp)
 
+from app.errors import bp as errors_bp
+app.register_blueprint(errors_bp)
+
 from app import cli
 app.cli.add_command(cli.user_cli)
 app.cli.add_command(cli.manage_cli)
@@ -60,11 +63,11 @@ class EmailHandler(logging.Handler):
         """Generate email."""
         log_entry = self.format(record)
         body = '<pre>{}</pre><br><br><a href="https://meetgessi.com/unsubscribe">Unsubscribe</a>'.format(log_entry)
-        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
-        email_obj = Mail(Email(os.environ.get("EMAIL_ADDR"), os.environ.get("EMAIL_NAME", "")),
-                         '{} [Error]'.format(os.environ.get("ENV_NAME", "ENV Not Set")), Email('j@jlyons.me'),
-                         Content('text/html', body))
-        response = sg.client.mail.send.post(request_body=email_obj.get())
+        sg = sendgrid.SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        from_email = Email(email=os.environ.get("EMAIL_ADDR"), name=os.environ.get("EMAIL_NAME", ""))
+        message = Mail(from_email=from_email, to_emails=os.environ['ADMIN_EMAILS'],
+                       subject='{} [Error]'.format(os.environ.get("ENV_NAME", "ENV Not Set")), html_content=body)
+        response = sg.send(message)
 
 
 # Setup debug

@@ -6,7 +6,7 @@ from pathlib import Path
 from app.models import db, User
 from flask.cli import AppGroup
 
-user_cli = AppGroup('user')
+user_cli = AppGroup('user', help="Useful commands for managing users")
 manage_cli = AppGroup('manage')
 
 
@@ -20,15 +20,24 @@ def inactive_user(email):
         db.session.commit()
 
 
+@user_cli.command('view')
+@click.option('--id', '-i', 'id')
+@click.option('--email', '-e', 'email')
+def inactive_user(id=None, email=None):
+    """Make user admin."""
+    user = User.get(id=id, email=email)
+    app.logger.debug(user)
+
+
 @manage_cli.command('make-css')
 def generate_css():
     """Generate CSS from SASS."""
     path_assets = Path.cwd() / 'app' / 'assets' / 'scss'
     path_css = Path.cwd() / 'app' / 'static' / 'css'
+    if not path_css.exists():
+        path_css.mkdir(parents=True, exist_ok=True)
     if not path_assets.exists():
         app.logger.error("Could not find app/assets/scss. Are you sure you're in the project root?")
-    elif not path_css.exists():
-        app.logger.error("Could not find app/static/css. Are you sure you're in the project root?")
     else:
         sass.compile(dirname=(path_assets, path_css), output_style='compressed')
         with open(path_css / 'bootstrap.css', 'w+') as css_out:
