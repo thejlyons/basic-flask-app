@@ -39,7 +39,7 @@ Vue.component('user-settings', {
                 <p class="text-muted">{{ user.city }}{{ user.state ? ', ' + user.state : user.state }}</p>
                 <div class="d-flex flex-row justify-content-between">
                     <div v-if="user.active" class="font-md">Purchased via:
-                        <a v-if="user.stripe_customer && user.stripe_subscription" v-bind:src="'https://dashboard.stripe.com/subscriptions/' + user.stripe_subscription">Stripe</a>
+                        <a v-if="user.stripe_customer && user.stripe_subscription" v-bind:href="'https://dashboard.stripe.com/test/subscriptions/' + user.stripe_subscription">Stripe</a>
                         <i v-else-if="user.promo_id" class="fas fa-ticket-alt" data-bs-toggle="tooltip" v-bind:title="user.promo"></i>
                         <i v-else class="fab fa-apple-pay"></i> 
                     </div>

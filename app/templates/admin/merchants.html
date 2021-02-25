@@ -225,7 +225,6 @@
                 new_merchant: function() {
                     $.postJSON('{{ url_for('admin.merchant', action='new') }}', {limit: this.limit, offset: this.offset, search: this.search}, function( response ) {
                         merchants.merchants = merchants.merchants.splice(0, 0, response.merchant);
-                        merchants.set_active(merchants.merchants[0]);
                     });
                 },
                 set_active: function(merchant) {

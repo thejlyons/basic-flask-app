@@ -214,7 +214,6 @@
                 new_fundraiser: function() {
                     $.postJSON('{{ url_for('admin.fundraiser', action='new') }}', {limit: this.limit, offset: this.offset, search: this.search}, function( response ) {
                         fundraisers.fundraisers = fundraisers.fundraisers.splice(0, 0, response.fundraiser);
-                        fundraisers.set_active(fundraisers.fundraisers[0]);
                     });
                 },
                 set_active: function(fundraiser) {
