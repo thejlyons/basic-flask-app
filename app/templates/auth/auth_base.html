@@ -1,0 +1,18 @@
+{% set toast_height = '0' %}
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="bg-gradient position-fixed top-0 left-0 right-0 bottom-0" style="z-index: -1"></div>
+    <div class="container rounded border-secondary py-3 px-4 bg-white" style="max-width: 350px">
+        <img class="img-fluid mb-5" src="{{ url_for('static', filename='img/pass360_icon_and_right_text.png') }}">
+        <h3 class="mb-4">{{ title }}</h3>
+        {% block auth_content %}{% endblock %}
+        <a class="btn-link btn w-100 text-primary-light text-decoration-none text-center d-block pt-3" href="{{ url_for('index.index') }}">< Back to Home</a>
+    </div>
+{% endblock %}
+
+<script>
+    $(document).ready(function() {
+        $(".pt-toast").css('top', '0');
+    });
+</script>

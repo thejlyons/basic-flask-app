@@ -1,0 +1,7 @@
+<!-- Partners -->
+<div class="container-fluid d-flex justify-content-around align-items-center my-5">
+    {% set images = ['jamba-juice.png', 'cinnabon.png', 'yogurtland.png', 'papa_murphys.png', 'crumbl.png', 'boondocks-logo.png'] %}
+    {% for image in images %}
+        <img src="{{ url_for('static', filename='img/' + image) }}" style="width: calc(100%/{{ (images|length) + 1 }})">
+    {% endfor %}
+</div>

@@ -1,0 +1,234 @@
+{% set active = 'fundraising' %}
+{% extends "base.html" %}
+
+{% block header %}
+    {% include "index/partials/navbar.html" %}
+{% endblock %}
+
+{% block content %}
+    <!-- Convenient Fundraiser, Greatest Return -->
+    <div class="container-fluid px-1 px-lg-5 gilroy mt-5 pt-5">
+        <div class="row px-4 px-lg-5 mt-4 mt-lg-3">
+            <div class="col-12 col-md-6 col-lg-5">
+                <div class="bg-faded p-4">
+                    <h1 class="font-xxl gilroy-bold">Convenient Fundraiser, Greatest Return</h1>
+                    <h4 class="font-lg">A discount app family and friends can save money on and youth will enjoy selling</h4>
+                </div>
+                <div class="text-center my-4">
+                    <button class="btn-get-started mx-auto btn btn-primary text-white rounded-pill px-5 mt-4" type="button" data-bs-toggle="modal" data-bs-target="#modal-form-contact">Get Started</button>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-7 mt-3 mt-md-0">
+                <img class="w-100 h-auto" src="{{ url_for('static', filename="img/app_feature.png") }}">
+                <div class="d-flex w-100 justify-content-center justify-content-md-end">
+                    <a href="https://itunes.apple.com/us/app/grub-pass/id1363599130?mt=8">
+                        <img class="px-3" src="{{ url_for('static', filename='img/qr-apple.png') }}" style="width: 140px; align-self: center;">
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=com.grubpass.crown&hl=en_US">
+                        <img class="px-3" src="{{ url_for('static', filename='img/qr-google.png') }}" style="width: 140px; align-self: center;">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature list -->
+    <div class="container-fluid px-3 px-md-5 py-5 my-5 bg-faded">
+        <div class="row px-4">
+            <div class="col-12 col-md-4 text-center px-3 mb-5">
+                <h1><i class="fas fa-cloud text-faded font-xl"></i></h1>
+                <p class="font-lg gilroy">Discount app is sold virtually in the app keeping participants safe.</p>
+            </div>
+            <div class="col-12 col-md-4 text-center px-3 mb-5">
+                <h1><i class="fas fa-dollar-sign text-faded font-xl"></i></h1>
+                <p class="font-lg gilroy">Sell for $25 and your organization keeps $12.50. All payments done in the app.</p>
+            </div>
+            <div class="col-12 col-md-4 text-center px-3 mb-5">
+                <h1><i class="fas fa-calendar-alt text-faded font-xl"></i></h1>
+                <p class="font-lg gilroy">Subscription is good for 1 year of savings at locals’ favorite merchants.</p>
+            </div>
+            <div class="col-12 text-center gilroy">
+                <button type="button" class="btn-get-started mx-auto btn btn-primary text-white rounded-pill px-5 mt-4" data-bs-toggle="modal" data-bs-target="#modal-form-contact">Get Started</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- You'll love the Simplicity -->
+    <div class="container-fluid px-1 px-lg-5 gilroy mt-5 py-5">
+        <div class="row px-4 px-lg-5 mt-4 mt-lg-3">
+            <div class="col-12 col-md-6 col-lg-7 mt-3 mt-md-0 order-1 order-md-0 gilroy">
+                <img class="w-100 h-auto" src="{{ url_for('static', filename='img/simplicity1.svg') }}">
+            </div>
+            <div class="col-12 col-md-6 col-lg-5 order-0 order-md-1">
+                <div class="bg-faded p-4 text-right ms-0 ms-md-5">
+                    <h1 class="font-xxl text-right gilroy-bold">User Friendly For Everyone</h1>
+                    <h4 class="font-lg text-right">The most user-friendly fundraising app on the market. Even kids and grandparents can sell it.</h4>
+                </div>
+                <div class="text-center my-4 gilroy ms-0 ms-md-5">
+                    <button type="button" class="btn-get-started mx-auto btn btn-primary text-white rounded-pill px-5" data-bs-toggle="modal" data-bs-target="#modal-tutorial">Play</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fundraising Tutorial Modal -->
+    <div id="modal-tutorial" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">How Fundraising Works</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <video class="w-100" controls>
+                        <source src="{{ url_for('static', filename='fundraiser_tutorial.mp4') }}" type="video/mp4">
+                    </video>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary text-white rounded-pill px-5" data-bs-dismiss="modal">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fundraising Form Modal -->
+    <div id="modal-form-contact" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Get Started</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('index.fundraising_submit') }}" method="post" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div class="modal-body">
+                        <p>Leave your contact information and we'll get back to you about setting up your own fundraiser or any other questions you may have!</p>
+                        <div class="form-group">
+                            {{ form.fullname.label() }}
+                            {% if form.fullname.errors|length %}
+                                {{ form.fullname(class_="form-control is-invalid") }}
+                                {% for error in form.fullname.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.fullname(class_="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.email.label() }}
+                            {% if form.email.errors|length %}
+                                {{ form.email(class_="form-control is-invalid") }}
+                                {% for error in form.email.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.email(class_="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.phone.label() }}
+                            {% if form.phone.errors|length %}
+                                {{ form.phone(class_="form-control is-invalid") }}
+                                {% for error in form.phone.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.phone(class_="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.city.label() }}
+                            {% if form.city.errors|length %}
+                                {{ form.city(class_="form-control is-invalid") }}
+                                {% for error in form.city.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.city(class_="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.state.label() }}
+                            {% if form.state.errors|length %}
+                                {{ form.state(class_="form-control is-invalid") }}
+                                {% for error in form.state.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.state(class_="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.organization.label() }}
+                            {% if form.organization.errors|length %}
+                                {{ form.organization(class_="form-control is-invalid") }}
+                                {% for error in form.organization.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.organization(class_="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.base_goal.label() }}
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                {% if form.base_goal.errors|length %}
+                                    {{ form.base_goal(class_="form-control is-invalid") }}
+                                    {% for error in form.base_goal.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    {{ form.base_goal(class_="form-control") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form.start.label() }}
+                            {% if form.start.errors|length %}
+                                {{ form.start(class_="form-control is-invalid im-date") }}
+                                {% for error in form.start.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.start(class_="form-control im-date") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Close</button>
+                        {{ form.submit(class_="btn btn-primary text-white rounded-pill px-5") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% include "index/partials/footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            {% if error %}
+                $("#modal-form-contact").modal('show');
+            {% endif %}
+        });
+    </script>
+{% endblock %}

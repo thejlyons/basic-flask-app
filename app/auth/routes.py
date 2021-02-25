@@ -23,7 +23,7 @@ def unsubscribe_submit():
         unsub = Unsubscriber(email=form.email.data)
         db.session.add(unsub)
         db.session.commit()
-        flash("Your email and preferences have been recorded..")
+        flash("Your email preferences have been recorded.")
     return redirect(url_for('auth.unsubscribe'))
 
 
@@ -36,14 +36,14 @@ def login():
         if user:
             user.email_confirmed = True
             db.session.commit()
-            flash("Thank you. Your email has been confirmed!")
+            flash("Thank you. Your email has been confirmed.")
             redirect(user.get_landing_page())
         else:
             flash("You're confirmation link is invalid.")
     if current_user.is_authenticated:
         return redirect(current_user.get_landing_page())
     form = LoginForm()
-    return render_template('auth/login.html', title='Sign In', form=form)
+    return render_template('auth/login.html', title='Login', form=form)
 
 
 @bp.route('/login/submit', methods=['POST'])
@@ -56,23 +56,29 @@ def login_submit():
             flash('Invalid email or password')
         else:
             login_user(user, remember=form.remember_me.data)
-            flash("Logged in!")
             return redirect(user.get_landing_page())
     return redirect(url_for('auth.login'))
 
 
 @bp.route('/register', methods=['GET'])
-def register():
+@bp.route('/register/<token>', methods=['GET'])
+def register(token=None):
     """Login endpoint."""
+    if token != "PASS360REG001":
+        return redirect(url_for('index.index'))
     if current_user.is_authenticated:
         return redirect(current_user.get_landing_page())
     form = RegisterForm()
-    return render_template('auth/register.html', title='Sign In', form=form)
+    return render_template('auth/register.html', title='Register', form=form, token=token)
 
 
 @bp.route('/register/submit', methods=['POST'])
-def register_submit():
+@bp.route('/register/submit/<token>', methods=['POST'])
+def register_submit(token=None):
     """Login endpoint."""
+    if token != "PASS360REG001":
+        return redirect(url_for('index.index'))
+
     form = RegisterForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -87,24 +93,22 @@ def register_submit():
 
             send_confirm_email(user)
             login_user(user)
-            flash("Registered!")
+            flash("Your account has been successfully created.")
             return redirect(user.get_landing_page())
-    return render_template('auth/register.html', title='Sign In', form=form)
+    return render_template('auth/register.html', title='Register', form=form, token=token)
 
 
 @bp.route('/logout')
 def logout():
     """Logout endpoint."""
     logout_user()
-    flash("You have been logged out.")
-    return redirect(url_for('index'))
+    return redirect(url_for('index.index'))
 
 
 @bp.route('/reset_password_request', methods=['GET'])
 def reset_password_request():
     """Request Password Reset endpoint."""
     if current_user.is_authenticated:
-        flash("Already logged in!")
         return redirect(current_user.get_landing_page())
     form = ResetPasswordRequestForm()
     return render_template('auth/reset_password_request.html', title='Reset Password', form=form)

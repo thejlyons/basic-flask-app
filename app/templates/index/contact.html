@@ -1,0 +1,38 @@
+{% set active = 'contact' %}
+{% extends "base.html" %}
+
+{% block header %}
+    {% include "index/partials/navbar.html" %}
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid position-relative p-0 w-100 gilroy" style="height: 80vh">
+        <div class="bg-image-full bg-image-dark text-white" style="background-image: url('{{ url_for('static', filename='img/as2.jpeg') }}')"></div>
+        <div class="d-flex flex-column align-content-center mt-0 pt-4 mt-sm-5 pt-sm-5 top-0 left-0 right-0 position-absolute">
+            <img class="mx-auto" src="{{ url_for('static', filename="img/pass360.png") }}" style="width: 256px;">
+            <h1 class="text-center font-xxl gilroy-bold text-white py-2 py-sm-4">Get in Touch</h1>
+            <div id="social-icons" class="d-flex justify-content-center align-content-center mb-5">
+                <a href="mailto:support@passthreesixty.com" style="font-size: 1.55rem;">
+                    <i class="fas fa-envelope bg-secondary text-center mx-4 rounded text-white" style="padding: 0.39rem;"></i>
+                </a>
+                <a href="tel:+1-801-980-0038" style="font-size: 1.3rem;">
+                    <i class="fas fa-phone bg-secondary text-center mx-4 rounded text-white" style="padding: 0.5rem;"></i>
+                </a>
+                <a href="https://www.instagram.com/pass_360/" style="font-size: 2.6rem; margin-top: -2px; line-height: 0;">
+                    <i class="fab fa-instagram mx-4 text-secondary"></i>
+                </a>
+                <a href="https://www.facebook.com/Pass360/" style="font-size: 2.5rem; margin-top: -1px; line-height: 0;">
+                    <i class="fab fa-facebook-square mx-4 text-secondary"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid px-0 pt-4 position-relative" style="z-index: 5">
+        {% include "index/partials/footer.html" %}
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

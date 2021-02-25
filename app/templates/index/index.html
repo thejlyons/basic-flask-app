@@ -1,11 +1,37 @@
+{% set active = 'home' %}
 {% extends "base.html" %}
 
+{% block header %}
+    {% include "index/partials/navbar.html" %}
+{% endblock %}
+
 {% block content %}
-    <h1>Hello World!</h1>
-    {% if current_user.is_anonymous %}
-        <a href="{{ url_for('auth.login') }}">Login</a>
-        <a href="{{ url_for('auth.register') }}">Register</a>
-    {% else %}
-        <a href="{{ url_for('auth.logout') }}">Logout</a>
-    {% endif %}
+    <!-- Video -->
+    <div class="container-fluid text-center p-0 w=100">
+        <video poster="{{ url_for('static', filename='img/Girl_w_app.jpg') }}" controls style="width: 100%">
+            <source src="{{ url_for('static', filename='landing_promo.mp4') }}" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Partners -->
+    {% include "index/partials/partners.html" %}
+
+    <!-- How To Redeem -->
+    <div class="container-fluid bg-faded">
+        <div class="container gilroy pt-5">
+            <div class="row">
+                <div class="col-12 col-md-6 col-lg-5">
+                    <div class="p-4 text-left ms-0 ms-md-5">
+                        <h1 class="font-xxl gilroy-bold">How To Redeem Discount</h1>
+                        <h4 class="font-lg">Three simple steps to save money at locals' favorite merchants.</h4>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-7 mt-3 mt-md-0 gilroy">
+                    <img class="mb-5" src="{{ url_for('static', filename='img/how_to_redeem.svg') }}" style="width: 100%; height: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include "index/partials/footer.html" %}
 {% endblock %}

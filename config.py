@@ -1,10 +1,19 @@
+"""Pass360 Config"""
+__version__ = '0.10.18'
+
 import os
+import hashlib
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
     """General Settings."""
+    m = hashlib.md5()
+    VERSION_CODE = __version__
+    m.update(VERSION_CODE.encode('utf-8'))
+    VERSION = str(int(m.hexdigest(), 16))[0:12]
+
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
@@ -13,11 +22,18 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     ADMINS = [email.strip() for email in os.environ['ADMIN_EMAILS'].split(',')]
+    ADMIN_TOKENS = [token.strip() for token in os.environ['ADMIN_EXPO_TOKEN'].split(',')]
+
     SECRET_KEY = os.environ.get('SECRET_KEY', 'temp-secret-key-here')
-    S3_LOCATION = 'https://{}.s3.amazonaws.com/'.format(os.environ.get("S3_BUCKET_NAME"))
+    S3_SECRET = os.environ.get("S3_SECRET")
+    S3_ACCESS = os.environ.get("S3_ACCESS")
+    S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
+    S3_LOCATION = 'https://{}.s3.amazonaws.com/'.format(S3_BUCKET_NAME)
 
     CELERY_BROKER_URL = 'redis://localhost:6379'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+    STRIPE_SUBSCRIPTION_ID = os.environ.get('STRIPE_SUBSCRIPTION_ID', 'mealpass')
 
 
 class ProductionConfig(Config):

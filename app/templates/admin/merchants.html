@@ -1,0 +1,464 @@
+{% set active = 'merchants' %}
+{% extends "base.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" type= "text/css" href= "{{ url_for('static', filename='css/dist/dropzone.min.css', v=config.VERSION) }}">
+{% endblock %}
+
+{% block header %}
+    {% include "admin/partials/navbar.html" %}
+{% endblock %}
+
+{% block content %}
+    <div id="merchants" class="container-fluid bg-secondary-light pt-5" style="min-height: 95vh;">
+        <div class="d-flex flex-column w-100 px-4 pb-4 position-relative">
+            <div class="controls d-flex justify-content-between align-content-center my-4">
+                <div class="input-group" style="width: 300px;">
+                    <i class="fas fa-search input-group-text text-secondary pt-2"></i>
+                    <input type="text" class="form-control" v-model="search" placeholder="Search..." aria-label="Username" aria-describedby="basic-addon1" @input="start_search">
+                </div>
+                <button type="button" @click="new_merchant()" class="btn btn-primary px-4 text-white" style="white-space: nowrap;">+ New Merchant</button>
+            </div>
+            <table id="table-merchants" class="w-100" style="border-collapse: separate; border-spacing: 0 10px">
+                <tr class="bg-transparent p-3">
+                    <th class="text-secondary font-md p-2">Merchant</th>
+                    <th class="text-secondary font-md p-2">Locations</th>
+                    <th class="text-secondary font-md p-2">Socials</th>
+                    <th class="text-secondary font-md p-2"></th>
+                    <th class="text-secondary font-md p-2"></th>
+                </tr>
+                <tr v-if="merchants.length === 0">
+                    <td colspan="5" class="border rounded-3 py-2 bg-white text-center text-black-50 font-sm">No results found</td>
+                </tr>
+                <tr is="merchant"
+                    v-for="merchant in merchants"
+                    v-bind:key="'merchant-' + merchant.id"
+                    v-bind:merchant="merchant"
+                    v-on:set_active="set_active"
+                    v-on:delete_merchant="delete_merchant"
+                ></tr>
+            </table>
+            <div v-if="loading" id="table-screen" class="flex-column">
+                <div class="text-center text-white-50">
+                    <i class="fas fa-circle-notch fa-spin font-xxl mt-4"></i>
+                </div>
+            </div>
+
+            <div id="merchant-page-controls" class="w-100 d-flex flex-row justify-content-end mt-2">
+                <select class="form-select me-2" aria-label="Page limit select" v-model="limit" @change="load_merchants()" style="width: 5rem;">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="250">250</option>
+                </select>
+                <ul class="pagination">
+                    <li key="prev" class="page-item"><a class="page-link" href="#" @click="page_prev()">Previous</a></li>
+                    <li v-for="p in pages" v-bind:key="'page-' + (p)" class="page-item"><a class="page-link" href="#" @click="page_select(p)">!{ p }</a></li>
+                    <li key="next" class="page-item"><a class="page-link" href="#" @click="page_next()">Next</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="modal-merchant-edit" class="modal" tabindex="-1">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content">
+                    <div v-if="active_merchant" class="modal-body m-0 p-0 position-relative">
+                        <div class="custom-backdrop position-absolute top-0 bottom-0 left-0 right-0" style="z-index: 1051; display: none;"></div>
+                        <div class="h-100 position-absolute left-0 right-0 top-0 bottom-0 p-5" v-bind:style="'transition: left 0.6s; left: ' + editor_pos">
+                            <merchant-settings
+                                v-if="editing === null"
+                                v-bind:name="active_merchant.name"
+                                v-bind:instagram="active_merchant.instagram"
+                                v-bind:facebook="active_merchant.facebook"
+                                v-bind:website="active_merchant.website"
+                                v-bind:terms_agreed="active_merchant.terms_agreed"
+                                v-bind:welcome_email="active_merchant.welcome_email"
+                                v-bind:go_live_text="active_merchant.go_live_text"
+                                v-bind:notes="active_merchant.notes"
+                                v-on:propogate_data="propogate_data"
+                                v-on:new_note="new_note"
+                                v-on:delete_note="delete_note"
+                            ></merchant-settings>
+                            <merchant-images
+                                v-if="editing === 'images'"
+                                v-bind:images="active_merchant.images"
+                                v-on:propogate_data="propogate_data"
+                            ></merchant-images>
+                            <merchant-offers
+                                v-if="editing === 'offers'"
+                                v-bind:offers="active_merchant.offers"
+                                v-on:new_offer="new_offer"
+                                v-on:save_offer="save_offer"
+                                v-on:delete_offer="delete_offer"
+                            ></merchant-offers>
+                            <merchant-locations
+                                v-if="editing === 'locations'"
+                                v-bind:locations="active_merchant.locations"
+                                v-on:new_location="new_location"
+                                v-on:save_location="save_location"
+                                v-on:delete_location="delete_location"
+                                v-on:new_note="new_note"
+                                v-on:delete_note="delete_note"
+                            ></merchant-locations>
+                            <merchant-contacts
+                                v-if="editing === 'contacts'"
+                                v-bind:contacts="active_merchant.contacts"
+                                v-on:new_contact="new_contact"
+                                v-on:save_contact="save_contact"
+                                v-on:delete_contact="delete_contact"
+                            ></merchant-contacts>
+                        </div>
+                        <div id="merchant-edit-sidebar" class="bg-primary-light h-100 d-flex flex-column collapse position-absolute left-0 top-0 bottom-0" v-bind:style="'width: 300px; left: ' + sidebar_pos + '; transition: left 0.6s;'">
+                            <div class="position-absolute rounded-circle bg-primary-light cursor-pointer" @click="toggle_sidebar()" style="top: calc(50% - 1.5rem); right: -1.5rem; width: 3rem; height: 3rem; padding-top: 0.65rem; padding-left: 1.4rem;">
+                                <i class="fas fa-chevron-left text-white" v-bind:style="'font-size: 1.8rem; transform: rotate( -' + toggler_rot + 'deg ); transition: transform 0.6s;'"></i>
+                            </div>
+                            <div class="h-100 d-flex flex-column justify-content-start align-content-start">
+                                <h3 class="p-3">!{ active_merchant.name ? active_merchant.name : 'New Merchant' }</h3>
+                                <div class="p-3 cursor-pointer" v-bind:class="{'bg-primary': editing === null}" @click="set_editing(null)">Settings</div>
+                                <div class="p-3 cursor-pointer" v-bind:class="{'bg-primary': editing === 'images'}" @click="set_editing('images')">Images</div>
+                                <div class="p-3 cursor-pointer" v-bind:class="{'bg-primary': editing === 'offers'}" @click="set_editing('offers')">Offers</div>
+                                <div class="p-3 cursor-pointer" v-bind:class="{'bg-primary': editing === 'locations'}" @click="set_editing('locations')">Locations</div>
+                                <div class="p-3 cursor-pointer" v-bind:class="{'bg-primary': editing === 'contacts'}" @click="set_editing('contacts')">Contacts</div>
+                                <div class="p-3 mt-auto" id="saving-feedback">
+                                    <div v-if="!saving && !error" class="text-muted"><i class="far fa-check-circle"></i> All changes saved</div>
+                                    <div v-if="saving" class="text-muted"><i class="fas fa-circle-notch fa-spin"></i> Saving...</div>
+                                    <div v-if="error" class="text-danger"><i class="fas fa-times-circle"></i> Error. Please reload the page and try again.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close position-absolute top-0 right-0 m-4" data-bs-dismiss="modal" aria-label="Close" @click="clear_active()"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.608.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/dist/dropzone.min.js', v=config.VERSION) }}"></script>
+    <script src="{{ url_for('static', filename='js/components/admin/merchants.js', v=config.VERSION) }}"></script>
+    <script>
+        var s3;
+        var bucket = '{{ config.S3_BUCKET_NAME }}';
+        var merchants = new Vue({
+            delimiters: ['!{', '}'],
+            el: '#merchants',
+            data: function() {
+                return {
+                    'merchants': [],
+                    'search': '',
+                    'loading': true,
+                    'limit': 10,
+                    'offset': 0,
+                    'count': 0,
+                    'active_merchant': null,
+                    'editing': null,
+                    'location_timeout': null,
+                    'search_timeout': null,
+                    'contact_timeout': null,
+                    'offer_timeout': null,
+                    'save_timeout': null,
+                    'show_sidebar': true,
+                    'saving': false,
+                    'error': ''
+                }
+            },
+            computed: {
+                pages: function() {
+                    let c = Math.ceil(this.count / this.limit);
+                    return c ? c : 1;
+                },
+                sidebar_pos: function() {
+                    return this.show_sidebar ? '0' : '-300px';
+                },
+                editor_pos: function() {
+                    return this.show_sidebar ? '300px' : '0';
+                },
+                toggler_rot: function() {
+                    return this.show_sidebar ? '0' : '180';
+                }
+            },
+            mounted: function() {
+                this.load_merchants();
+            },
+            methods: {
+                start_search: function() {
+                    console.log("Searching...")
+                    this.loading = true;
+
+                    if (this.search_timeout) {
+                        clearTimeout(this.search_timeout);
+                    }
+
+                    this.search_timeout = setTimeout(function() {
+                        merchants.load_merchants();
+                    }, 1500);
+                },
+                load_merchants: function() {
+                    this.loading = true;
+                    $.postJSON('{{ url_for('admin.merchant', action='list-all') }}', {limit: this.limit, offset: this.offset, search: this.search}, function( response ) {
+                        merchants.merchants = response.merchants;
+                        merchants.count = response.count;
+                        merchants.loading = false;
+                    });
+                },
+                page_prev: function() {
+                    if (this.offset > 0) {
+                        this.offset--;
+                        this.load_merchants();
+                    }
+                },
+                page_select: function(p) {
+                    if (p < this.pages) {
+                        this.offset = p;
+                        this.load_merchants();
+                    }
+                },
+                page_next: function() {
+                    if (this.offset < this.pages - 1) {
+                        this.offset++;
+                        this.load_merchants();
+                    }
+                },
+                new_merchant: function() {
+                    $.postJSON('{{ url_for('admin.merchant', action='new') }}', {limit: this.limit, offset: this.offset, search: this.search}, function( response ) {
+                        merchants.merchants = merchants.merchants.splice(0, 0, response.merchant);
+                        merchants.set_active(merchants.merchants[0]);
+                    });
+                },
+                set_active: function(merchant) {
+                    this.active_merchant = merchant;
+                    $("#modal-merchant-edit").modal('show');
+                },
+                clear_active: function() {
+                    this.trigger_save(0, true);
+                },
+                propogate_data: function(key, data) {
+                    console.log('Propogating...')
+                    this.active_merchant[key] = data;
+                    this.trigger_save()
+                },
+                trigger_save: function(delay=2000, clear=false) {
+                    this.saving = true;
+                    if (this.save_timeout) {
+                        clearTimeout(this.save_timeout);
+                    }
+
+                    this.save_timeout = setTimeout(function() {
+                        $.postJSON('{{ url_for('admin.merchant', action='save') }}', {merchant: merchants.active_merchant}, function( response ) {
+                            merchants.saving = false;
+                            if (clear) {
+                                merchants.active_merchant = null;
+                                merchants.load_merchants();
+                            }
+                        });
+                    }, delay)
+                },
+                toggle_sidebar: function() {
+                    this.show_sidebar = !this.show_sidebar;
+                },
+                set_editing: function(type) {
+                    this.editing = type;
+                },
+                new_note: function(note, location_id=null) {
+                    if (note && this.active_merchant) {
+                        let url = location_id === null ? '{{ url_for('admin.merchant', action='note') }}' : '{{ url_for('admin.merchant', action='location-note') }}';
+                        let data = {merchant_id: merchants.active_merchant.id, note: note};
+                        if (location_id !== null) {
+                            data['merchant_id'] = null;
+                            data['location_id'] = location_id
+                        }
+                        $.postJSON(url, data, function( response ) {
+                            if (location_id === null) {
+                                if (!merchants.active_merchant.notes) {
+                                    merchants.active_merchant.notes = [];
+                                }
+                                merchants.active_merchant.notes.splice(0, 0, response.note);
+                            } else {
+                                let index = null;
+                                for (let i in merchants.active_merchant.locations) {
+                                    if (merchants.active_merchant.locations[i].id === location_id) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+
+                                if (!merchants.active_merchant.locations[index].notes) {
+                                    merchants.active_merchant.locations[index].notes = [];
+                                }
+                                merchants.active_merchant.locations[index].notes.splice(0, 0, response.note);
+                            }
+                        });
+                    }
+                },
+                delete_note: function(note, index, location_id=null) {
+                    if (note && this.active_merchant) {
+                        let url = location_id === null ? '{{ url_for('admin.merchant', action='delete-note') }}' : '{{ url_for('admin.merchant', action='location-delete-note') }}';
+                        $.postJSON(url, {note: note}, function( response ) {
+                            if (location_id === null) {
+                                if (merchants.active_merchant.notes) {
+                                    merchants.active_merchant.notes.splice(index, 1);
+                                }
+                            } else {
+                                let index = null;
+                                for (let i in merchants.active_merchant.locations) {
+                                    if (merchants.active_merchant.locations[i].id === location_id) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+
+                                if (merchants.active_merchant.locations[index].notes) {
+                                    merchants.active_merchant.locations[index].notes.splice(index, 1);
+                                }
+                            }
+                        });
+                    }
+                },
+                delete_merchant: function(merchant) {
+                    if (merchant) {
+                        $.postJSON('{{ url_for('admin.merchant', action='delete') }}', {merchant: merchant}, function( response ) {
+                            merchants.load_merchants();
+                        });
+                    }
+                },
+                new_offer: function() {
+                    if (merchants.active_merchant) {
+                        $.postJSON('{{ url_for('admin.merchant', action='offer-new') }}', {merchant_id: merchants.active_merchant.id}, function( response ) {
+                            if (response.offer) {
+                                if (!merchants.active_merchant.offers) {
+                                    merchants.active_merchant.offers = [];
+                                }
+                                merchants.active_merchant.offers.push(response.offer);
+                            }
+                        });
+                    }
+                },
+                save_offer: function(offer, index, delay=2000) {
+                    if (offer) {
+                        this.saving = true;
+                        if (this.offer_timeout) {
+                            clearTimeout(this.offer_timeout);
+                        }
+
+                        this.offer_timeout = setTimeout(function() {
+                            $.postJSON('{{ url_for('admin.merchant', action='offer-save') }}', {offer: offer}, function( response ) {
+                                if (response.offer) {
+                                    if (!merchants.active_merchant.offers) {
+                                        merchants.active_merchant.offers = [];
+                                    }
+                                    merchants.active_merchant.offers.splice(index, 1, response.offer);
+                                }
+                                merchants.saving = false;
+                            });
+                        }, delay)
+                    }
+                },
+                delete_offer: function(offer, index) {
+                    if (offer) {
+                        $.postJSON('{{ url_for('admin.merchant', action='offer-delete') }}', {offer: offer}, function( response ) {
+                            if (!merchants.active_merchant.offers) {
+                                merchants.active_merchant.offers = [];
+                            }
+                            merchants.active_merchant.offers.splice(index, 1);
+                        });
+                    }
+                },
+                new_location: function() {
+                    if (merchants.active_merchant) {
+                        $.postJSON('{{ url_for('admin.merchant', action='location-new') }}', {merchant_id: merchants.active_merchant.id}, function( response ) {
+                            if (response.location) {
+                                if (!merchants.active_merchant.locations) {
+                                    merchants.active_merchant.locations = [];
+                                }
+                                merchants.active_merchant.locations.push(response.location);
+                            }
+                        });
+                    }
+                },
+                save_location: function(location, index, delay=2000) {
+                    if (location) {
+                        this.saving = true;
+                        if (this.location_timeout) {
+                            clearTimeout(this.location_timeout);
+                        }
+
+                        this.location_timeout = setTimeout(function() {
+                            $.postJSON('{{ url_for('admin.merchant', action='location-save') }}', {location: location}, function( response ) {
+                                if (response.location) {
+                                    if (!merchants.active_merchant.locations) {
+                                        merchants.active_merchant.locations = [];
+                                    }
+                                    merchants.active_merchant.locations.splice(index, 1, response.location);
+                                }
+                                merchants.saving = false;
+                            });
+                        }, delay)
+                    }
+                },
+                delete_location: function(location, index) {
+                    if (location) {
+                        $.postJSON('{{ url_for('admin.merchant', action='location-delete') }}', {location: location}, function( response ) {
+                            if (!merchants.active_merchant.locations) {
+                                merchants.active_merchant.locations = [];
+                            }
+                            merchants.active_merchant.locations.splice(index, 1);
+                        });
+                    }
+                },
+                new_contact: function() {
+                    if (merchants.active_merchant) {
+                        $.postJSON('{{ url_for('admin.merchant', action='contact-new') }}', {merchant_id: merchants.active_merchant.id}, function( response ) {
+                            if (response.contact) {
+                                if (!merchants.active_merchant.contacts) {
+                                    merchants.active_merchant.contacts = [];
+                                }
+                                merchants.active_merchant.contacts.push(response.contact);
+                            }
+                        });
+                    }
+                },
+                save_contact: function(contact, index, delay=2000) {
+                    if (contact) {
+                        this.saving = true;
+                        if (this.contact_timeout) {
+                            clearTimeout(this.contact_timeout);
+                        }
+
+                        this.contact_timeout = setTimeout(function() {
+                            $.postJSON('{{ url_for('admin.merchant', action='contact-save') }}', {contact: contact}, function( response ) {
+                                if (response.contact) {
+                                    if (!merchants.active_merchant.contacts) {
+                                        merchants.active_merchant.contacts = [];
+                                    }
+                                    merchants.active_merchant.contacts.splice(index, 1, response.contact);
+                                }
+                                merchants.saving = false;
+                            });
+                        }, delay)
+                    }
+                },
+                delete_contact: function(contact, index) {
+                    if (contact) {
+                        $.postJSON('{{ url_for('admin.merchant', action='contact-delete') }}', {contact: contact}, function( response ) {
+                            if (!merchants.active_merchant.contacts) {
+                                merchants.active_merchant.contacts = [];
+                            }
+                            merchants.active_merchant.contacts.splice(index, 1);
+                        });
+                    }
+                }
+            }
+        });
+
+        $(document).ready(function() {
+            s3 = new AWS.S3({
+                accessKeyId: "{{ config.S3_ACCESS }}",
+                secretAccessKey: "{{ config.S3_SECRET }}",
+                region: 'us-west-1'
+            });
+        });
+    </script>
+{% endblock %}

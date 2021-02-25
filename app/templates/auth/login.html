@@ -1,11 +1,9 @@
-{% extends "base.html" %}
+{% extends "auth/auth_base.html" %}
 
-{% block content %}
-    <h1>Login!</h1>
-    <a href="{{ url_for('index') }}">Home</a>
+{% block auth_content %}
     <form action="{{ url_for('auth.login_submit') }}" method="post" novalidate>
         {{ form.hidden_tag() }}
-        <div class="form-group">
+        <div class="form-group mb-2">
             {{ form.email.label }}
             {% if form.email.errors|length %}
                 {{ form.email(class_="form-control is-invalid") }}
@@ -18,7 +16,7 @@
                 {{ form.email(class_="form-control") }}
             {% endif %}
         </div>
-        <div class="form-group">
+        <div class="form-group mb-2">
             {{ form.password.label }}
             {% if form.password.errors|length %}
                 {{ form.password(class_="form-control is-invalid") }}
@@ -31,11 +29,13 @@
                 {{ form.password(class_="form-control") }}
             {% endif %}
         </div>
-        <div class="custom-control custom-checkbox">
-            {{ form.remember_me(class_="custom-control-input") }}
-            {{ form.remember_me.label(class_="custom-control-label") }}
+        <div class="form-check mb-2">
+            {{ form.remember_me(class_="form-check-input") }}
+            <label class="form-check-label" for="flexCheckDefault">
+                {{ form.remember_me.label() }}
+            </label>
         </div>
-        <a id="forgot-password" href="{{ url_for('auth.reset_password_request') }}">Forgot Password</a>
-        {{ form.submit(class_="btn btn-primary btn-block") }}
+        <a id="forgot-password" class="d-block mb-3 text-left text-decoration-none text-primary-light" href="{{ url_for('auth.reset_password_request') }}">Forgot Password</a>
+        {{ form.submit(class_="btn btn-primary btn-block w-100 rounded-pill text-white") }}
     </form>
 {% endblock %}

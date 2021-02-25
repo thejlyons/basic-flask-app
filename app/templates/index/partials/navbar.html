@@ -1,0 +1,44 @@
+{% set toast_height = '70px' %}
+
+<nav id="navbar" class="navbar navbar-expand-md navbar-light bg-white position-fixed left-0 right-0">
+    <div class="container-fluid">
+        <img class="navbar-brand" src="{{ url_for('static', filename='img/pass360_icon_and_right_text.png') }}">
+        <button class="navbar-toggler float-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-links" aria-controls="navbar-links" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="navbar-links" class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                {% set links = ['home', 'fundraising', 'merchants', 'contact'] %}
+                {% for link in links %}
+                    <li class="nav-item">
+                        <a class="nav-link text-secondary gilroy text-center text-md-left{{ ' active' if active == link else '' }}" href="/{{ link }}">{{ link|title }}</a>
+                    </li>
+                {% endfor %}
+                <li class="nav-item">
+                    <a class="nav-link text-secondary gilroy text-center text-md-left" href="/login">Login</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<script>
+    var prevScrollpos = window.pageYOffset;
+    window.onscroll = function() {
+        var currentScrollPos = window.pageYOffset;
+        if (currentScrollPos < 70) {
+            $("#navbar").css('top', '0');
+            $(".pt-toast").css('top', '70px');
+        } else {
+            if (prevScrollpos > currentScrollPos) {
+                $("#navbar").css('top', '0');
+                $(".pt-toast").css('top', '70px');
+            } else if (currentScrollPos >= 70) {
+                $("#navbar").css('top', '-75px');
+                $(".pt-toast").css('top', '0');
+            }
+        }
+        prevScrollpos = currentScrollPos;
+    }
+</script>

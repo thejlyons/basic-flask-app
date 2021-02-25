@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg data-name="Layer 1" version="1.1" viewBox="0 0 386.67 84.38" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title>Colors</dc:title>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style>.cls-1{fill:#f7f7f7;}.cls-2{fill:#ddd164;}.cls-3{fill:#80d08e;}.cls-4{fill:#4ccfa6;}.cls-5{font-size:9px;fill:#808285;}.cls-10,.cls-12,.cls-5{font-family:LouisGeorgeCafe, Louis George Café;}.cls-6{fill:#48b2b1;}.cls-7{fill:#4480bd;}.cls-8{fill:#bf56bd;}.cls-9{fill:none;stroke:#414042;stroke-miterlimit:10;stroke-width:2px;}.cls-10{font-size:16px;fill:#414042;}.cls-11,.cls-12{fill:#383838;}.cls-12{font-size:26px;}.cls-13{fill:url(#linear-gradient);}</style>
+  <linearGradient id="linear-gradient" x1="78.46" x2="563.02" y1="687.77" y2="842.61" gradientTransform="translate(-104.31,-715.62)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#ddd164" offset="0"/>
+   <stop stop-color="#dcd164" offset="0"/>
+   <stop stop-color="#bbd173" offset=".03"/>
+   <stop stop-color="#a1d07f" offset=".05"/>
+   <stop stop-color="#8fd087" offset=".08"/>
+   <stop stop-color="#84d08c" offset=".11"/>
+   <stop stop-color="#80d08e" offset=".14"/>
+   <stop stop-color="#4ccfa6" offset=".29"/>
+   <stop stop-color="#4bc4aa" offset=".36"/>
+   <stop stop-color="#48b2b1" offset=".44"/>
+   <stop stop-color="#47abb3" offset=".5"/>
+   <stop stop-color="#4696b8" offset=".59"/>
+   <stop stop-color="#4480bd" offset=".67"/>
+   <stop stop-color="#4d7dbd" offset=".7"/>
+   <stop stop-color="#6575bd" offset=".75"/>
+   <stop stop-color="#8c67bd" offset=".81"/>
+   <stop stop-color="#bf56bd" offset=".88"/>
+  </linearGradient>
+ </defs>
+ <title>Colors</title>
+ <rect id="gradient" class="cls-13" width="386.67" height="84.38" fill="url(#linear-gradient)"/>
+</svg>

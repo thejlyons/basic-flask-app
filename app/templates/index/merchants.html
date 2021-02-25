@@ -1,0 +1,190 @@
+{% set active = 'merchants' %}
+{% extends "base.html" %}
+
+{% block header %}
+    {% include "index/partials/navbar.html" %}
+{% endblock %}
+
+{% block content %}
+    <!-- Video -->
+    <div class="container-fluid p-0 w-100 gilroy" style="height: 100vh;">
+        <div class="bg-image-full text-white" style="background-image: url('{{ url_for('static', filename='img/christmas_family.jpeg') }}');">
+            <div class="row py-5">
+                <div class="col-0 col-sm-2 col-md-1"></div>
+                <div class="col-12 col-sm-7 col-md-4 px-5">
+                    <h1 class="font-xxl gilroy-bold">Locals' Favorite Merchants</h1>
+                    <h3 class="font-lg">Enjoy savings at 1,000+ locations throughout Utah and Las Vegas</h3>
+                    <div class="text-center my-4">
+                        <button type="button" class="btn-get-started mx-auto btn btn-accent rounded-pill px-5 mt-4" data-bs-toggle="modal" data-bs-target="#modal-merchant-contact">Become A Merchant</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Explore -->
+    <h2 class="text-center my-5 py-5 gilroy-bold">Explore Merchants</h2>
+
+    <div id="explore" class="container-fluid p-0 m-0" style="overflow: hidden">
+        <div class="container-fluid gilroy d-flex align-content-center mb-3 pb-3" style="overflow: scroll">
+            <explore-option
+                v-for="(option, i) in explore_options"
+                v-on:select_option="select_explore_option"
+                v-bind:key="'explore-' + option.id"
+                v-bind:image="option.image"
+                v-bind:title="option.title"
+                v-bind:id="option.id"
+            ></explore-option>
+        </div>
+
+
+        <div class="container d-flex flex-column-reverse align-content-center mb-5 pb-5">
+            <h1 v-if="explore_id !== null">Exploring !{ explore_id }...</h1>
+            <merchant
+                v-for="merchant in merchants"
+                v-if="explore_id !== null && merchant.categories.indexOf(explore_id) > -1"
+                v-bind:key="'merchant-' + merchant.id"
+                v-bind:image="merchant.image"
+                v-bind:name="merchant.name"
+                v-bind:city="merchant.city"
+                v-bind:state="merchant.state"
+            ></merchant>
+        </div>
+    </div>
+
+    <!-- Merchant Contact Form Modal -->
+    <div id="modal-merchant-contact" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Get Started</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('index.merchants_submit') }}" method="post" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div class="modal-body">
+                        <p>Our model is simple. Merchants offer a discount and we’ll display it for FREE in our app. Please submit your information and we’ll reach out to you soon!</p>
+                        <div class="form-group">
+                            {{ form.fullname.label() }}
+                            {% if form.fullname.errors|length %}
+                                {{ form.fullname(class_="form-control is-invalid") }}
+                                {% for error in form.fullname.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.fullname(class_="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.phone.label() }}
+                            {% if form.phone.errors|length %}
+                                {{ form.phone(class_="form-control is-invalid") }}
+                                {% for error in form.phone.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.phone(class_="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.business.label() }}
+                            {% if form.business.errors|length %}
+                                {{ form.business(class_="form-control is-invalid") }}
+                                {% for error in form.business.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.business(class_="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.locations.label() }}
+                            {% if form.locations.errors|length %}
+                                {{ form.locations(class_="form-control is-invalid") }}
+                                {% for error in form.locations.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.locations(class_="form-control") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Close</button>
+                        {{ form.submit(class_="btn btn-primary text-white rounded-pill px-5") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% include "index/partials/footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/components/index/popular_merchants.js', v=config.VERSION) }}"></script>
+    <script>
+         var popular_merchants = new Vue({
+            delimiters: ['!{', '}'],
+            el: '#explore',
+            data: function() {
+                return {
+                    'explore_options': [
+                        {
+                            'title': 'Entertainment',
+                            'image': '{{ url_for('static', filename='img/entertainment.JPEG') }}',
+                            'id': 4
+                        },
+                        {
+                            'title': 'Dining',
+                            'image': '{{ url_for('static', filename='img/dining.JPEG') }}',
+                            'id': 3
+                        },
+                        {
+                            'title': 'Fitness',
+                            'image': '{{ url_for('static', filename='img/fitness.JPEG') }}',
+                            'id': 1
+                        },
+                        {
+                            'title': 'Excursions',
+                            'image': '{{ url_for('static', filename='img/excursion.JPEG') }}',
+                            'id': 5
+                        },
+                        {
+                            'title': 'Wellness',
+                            'image': '{{ url_for('static', filename='img/wellness.JPEG') }}',
+                            'id': 6
+                        },
+                    ],
+                    'merchants': [],
+                    'explore_id': null
+                }
+            },
+            computed: {
+                is_computed: function() {
+                    return true;
+                }
+            },
+            methods: {
+                select_explore_option: function(explore_id) {
+                    console.log(`selecting: ${explore_id}`)
+                    this.explore_id = explore_id;
+                }
+            }
+        });
+
+        $(document).ready(function() {
+            {% if error %}
+                $("#modal-form-contact").modal('show');
+            {% endif %}
+        });
+    </script>
+{% endblock %}

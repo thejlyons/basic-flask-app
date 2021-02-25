@@ -1,4 +1,4 @@
-"""Basic App."""
+"""Pass360 App."""
 from app import app as application
 from app.models import db, User, Unsubscriber
 

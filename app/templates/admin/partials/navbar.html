@@ -1,0 +1,17 @@
+<nav id="navbar" class="navbar navbar-light bg-white position-fixed left-0 right-0">
+    <div class="container-fluid">
+        <img class="navbar-brand" src="{{ url_for('static', filename='img/pass360_icon_and_right_text.png') }}">
+
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary" type="button" id="admin-links" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+                <li><a class="dropdown-item text-secondary gilroy text-center text-md-left" href="{{ url_for('admin.merchants') }}">Merchants</a></li>
+                <li><a class="dropdown-item text-secondary gilroy text-center text-md-left" href="{{ url_for('admin.users') }}">Users</a></li>
+                <li><a class="dropdown-item text-secondary gilroy text-center text-md-left" href="{{ url_for('admin.fundraisers') }}">Fundraisers</a></li>
+                <li><a class="dropdown-item text-secondary gilroy text-center text-md-left" href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

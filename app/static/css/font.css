@@ -1,0 +1,25 @@
+@font-face {
+    font-family: Gilroy;
+    src: url("/static/fonts/GILROY-LIGHT.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: GilroyBold;
+    src: url("/static/fonts/GILROY-EXTRABOLD.ttf") format("truetype");
+}
+
+.gilroy {
+  font-family: Gilroy, 'sans-serif';
+}
+
+.gilroy-bold {
+  font-family: GilroyBold, 'sans-serif';
+}
+
+.marker {
+  font-family: 'Permanent Marker', cursive;
+}
+
+/* body {
+  font-family: 'MerrantLithe', sans-serif !important;
+} */
