@@ -90,7 +90,7 @@
   z-index: -2;
 }
 
-#background, #bg-redeemed, #soccer, #local, .bg-image-full {
+#bg-redeemed, #local, .bg-image-full {
   background-position: center;
   width: 100%;
   height: 100vh;
@@ -106,15 +106,9 @@
   filter: opacity(30%);
 }
 
-#background, #bg-redeemed, #soccer, #local {
+#bg-redeemed, #local {
   min-height: 500px;
   max-height: 700px;
-}
-
-#soccer {
-  filter: opacity(30%);
-  background-image: url('/static/img/soccer.jpeg');
-  height: 600px;
 }
 
 #landing, #footer {
@@ -126,11 +120,6 @@
   filter: opacity(30%);
   background-image: url('/static/img/local.jpeg');
   height: 400px;
-}
-
-#background {
-  /* filter: brightness(30%); */
-  background-image: url('/static/img/pumpkin_kids.jpg');
 }
 
 #bg-redeemed {
@@ -644,10 +633,6 @@ tbody.calendar-days td:hover {
 
   .experience img {
     height: 200px;
-  }
-
-  #soccer {
-    flex-direction: column-reverse;
   }
 
   #info {

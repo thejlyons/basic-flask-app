@@ -7,7 +7,8 @@
 *.db
 nginx/cache/*
 nginx/error.log
-venv/
+.venv
+.git
 
 *.pyc
 *.DS_Store
