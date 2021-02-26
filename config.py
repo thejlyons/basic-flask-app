@@ -1,5 +1,5 @@
 """Pass360 Config"""
-__version__ = '0.10.18'
+__version__ = '0.1.2'
 
 import os
 import hashlib
@@ -30,8 +30,9 @@ class Config(object):
     S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
     S3_LOCATION = 'https://{}.s3.amazonaws.com/'.format(S3_BUCKET_NAME)
 
-    CELERY_BROKER_URL = 'redis://localhost:6379'
-    CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+    REDIS_URL = os.environ.get("REDIS_URL")
+    CELERY_BROKER_URL = REDIS_URL if REDIS_URL else 'redis://localhost:6379'
+    CELERY_RESULT_BACKEND = REDIS_URL if REDIS_URL else 'redis://localhost:6379'
 
     STRIPE_SUBSCRIPTION_ID = os.environ.get('STRIPE_SUBSCRIPTION_ID', 'mealpass')
 
