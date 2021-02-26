@@ -1,9 +1,17 @@
 .idea/
 .venv/
-migrations
+.flaskenv.dev
+.env.dev
 .flaskenv
 .env
 *.db
+nginx/cache/*
+nginx/error.log
+venv/
+
+*.pyc
+*.DS_Store
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
