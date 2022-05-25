@@ -41,7 +41,7 @@ pendulum==2.1.2
 pgeocode==0.3.0
 phonenumbers==8.12.17
 psycopg2-binary==2.8.4
-PyJWT==1.7.1
+PyJWT==2.4.0
 python-dateutil==2.8.0
 python-dotenv==0.10.3
 python-editor==1.0.4
